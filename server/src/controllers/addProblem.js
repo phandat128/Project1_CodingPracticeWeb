@@ -13,7 +13,7 @@ async function addProblem(req, res) {
         exampleOutput: data.exampleOutput,
     }
     
-    console.log(problem)
+    console.log(data)
     
 
     await prisma.Problem.create({

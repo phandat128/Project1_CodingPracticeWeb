@@ -1,0 +1,131 @@
+$header-height: 64px;
+
+$menu-font-size: 15px;
+$menu-font-weight: 500;
+$menu-height: 40px;
+
+$title-font-size: 24px;
+$content-font-size: 14px;
+
+$border-color: #ced4da;
+
+/* General css */
+div {
+  box-sizing: border-box;
+}
+
+.flex {
+  display: flex;
+}
+
+.roundbox {
+  border: 1px solid $border-color;
+  border-radius: 0.375rem;
+}
+//override the default bootstrap border outline style
+.form-control:focus, .form-select:focus{
+  box-shadow: none !important;
+  border-color: $border-color !important;
+}
+
+/*body css*/
+.body {
+  margin: 0 auto;
+  max-width: 1000px;
+  background-color: #fff;
+
+  a {
+    color: black;
+    text-decoration: none;
+  }
+
+  .body-content {
+    min-height: 1000px;
+    margin: 32px 24px 0 24px;
+  }
+}
+
+/* Header css */
+.header {
+  height: $header-height;
+
+  div {
+    line-height: $header-height;
+  }
+
+  .logo {
+    font-size: 32px;
+
+    img {
+      padding-right: 12px;
+      height: $header-height;
+    }
+  }
+}
+
+/* Menu css */
+.menu {
+  font-size: $menu-font-size;
+  font-weight: $menu-font-weight;
+
+  height: $menu-height;
+  margin: 8px 20px 0 20px;
+
+  ul {
+    list-style-type: none;
+    line-height: $menu-height;
+    padding-left: 12px;
+
+    li {
+      padding-right: 32px;
+    }
+  }
+}
+
+/* Content css */
+#submit-button {
+  button {
+    width: 50%;
+  }
+
+  text-align: center;
+}
+
+.problem {
+  .name {
+    font-size: $title-font-size;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .topic {
+    margin-bottom: 24px;
+  }
+
+  .primary-div {
+    margin-bottom: 24px;
+
+    :first-child {
+      font-weight: 500;
+    }
+  }
+
+  .secondary-div {
+    margin-bottom: 12px;
+  }
+}
+
+.submit-table {
+  .title {
+    width: 25%;
+    text-align: right;
+    padding-right: 40px;
+  }
+}
+
+//footer css
+.footer {
+  height: 36px;
+  position: sticky;
+  bottom: 0;
+}

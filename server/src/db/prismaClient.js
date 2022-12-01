@@ -2,6 +2,23 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
+async function deleteAll() {
+    const all = await prisma.problem.deleteMany({})
+    console.log(all)
+}
+
+async function update(){
+    const problem = await prisma.problem.update({
+        where: {id: 5,},
+        data:{
+            topic: "Alice có a cái kẹo, Bob cho Alice b cái kẹo, hỏi Alice có tổng cộng bao nhiêu cái kẹo. Yêu cầu viết chương trình bằng ngôn ngữ C/C++.\nLưu ý giới hạn: a,b<10^19."
+        }
+
+    })
+}
+
+//update()
+
 async function main (){
     const problem = await prisma.Problem.create({
         data: {
@@ -15,5 +32,7 @@ async function main (){
     })
     console.log(problem)
 }
+
+//deleteAll()
 
 export default prisma
