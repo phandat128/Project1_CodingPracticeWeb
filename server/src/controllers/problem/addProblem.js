@@ -1,4 +1,4 @@
-import prisma from "../db/prismaClient.js";
+import prisma from "../../db/prismaClient.js";
 
 
 async function addProblem(req, res) {
