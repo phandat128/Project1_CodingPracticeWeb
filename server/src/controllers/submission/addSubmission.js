@@ -3,7 +3,6 @@ import path from 'path'
 import CodeRunner from '../../judgeEngine/CodeRunner.js';
 import FileAPI from '../../api/fileAPI.js';
 import evaluate from '../../judgeEngine/evaluate.js';
-import fs from 'fs';
 
 async function addSubmission(req, res) {
     const fileAPI = new FileAPI()
@@ -19,31 +18,40 @@ async function addSubmission(req, res) {
     const solutionFilePath = path.join(solutionDirPath, `${solutionFileName}${solutionFileExt}`) //.../src/solution/fileName.ext
     //console.log(sourceCode)
     fileAPI.writeSolution(solutionFilePath, sourceCode)
-    console.log(solutionFilePath)
+    //console.log(solutionFilePath)
 
     //copy solution file from solution directory to judgeEngine directory
     const runner = new CodeRunner()
     const tempFilePath = path.join(runner.dirname, `temp${solutionFileExt}`)
-    console.log(tempFilePath)
+    //console.log(tempFilePath)
     fileAPI.copyFile(solutionFilePath, tempFilePath)
 
     //copy testcase files to judgeEngine directory
     const testcaseDirPath = path.join(controllerDirPath, "../../", "testcase", body.problemId.toString())
     fileAPI.copyTestcase(testcaseDirPath, runner.dirname)
+    
+    try {
+        //run temp file
+        const startTime = Date.now()
+        runner.compile(tempFilePath, runner.dirname, "temp", solutionFileExt)
+        const compileTime = Date.now() - startTime
+        console.log(`Compiling time: ${compileTime} ms`)
+        runner.execute(runner.dirname, "temp")
+        const runTime = Date.now() - startTime - compileTime
+        console.log(`Running time: ${runTime} ms`)
 
-    //run temp file
-    const startTime = Date.now()
-    runner.compile(tempFilePath, runner.dirname, "temp", solutionFileExt)
-    const compileTime = Date.now() - startTime
-    console.log(`Compiling time: ${compileTime} ms`)
-    runner.execute(runner.dirname, "temp")
-    const runTime = Date.now() - startTime - compileTime
-    console.log(`Running time: ${runTime} ms`)
-
-    //evaluate output
-    console.log("Evaluate result:" + evaluate(path.join(runner.dirname, "results.txt"), path.join(runner.dirname, "output.txt")))
-
-    res.send("done")
+        //evaluate output
+        const result = evaluate(path.join(runner.dirname, "results.txt"), path.join(runner.dirname, "output.txt"))
+        console.log("Evaluate result:" + result)
+        res.json(result)
+    } catch (e) {
+        console.log(e.name)
+        console.log(e.message)
+        res.json({
+            error: e.name,
+            message: e.message
+        })
+    }
 }
 
 function languageExtension(language) {
