@@ -7,12 +7,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model problem {
-  id            Int    @id @default(autoincrement())
+enum Status {
+  PENDING
+  ACCEPTED
+  TIME_LIMIT_EXCEEDED
+  WRONG_ANSWER
+  COMPILE_ERROR
+  RUNTIME_ERROR
+}
+
+enum Language {
+  CPP
+  Python
+  Java
+}
+
+model Problem {
+  id            Int          @id @default(autoincrement())
   name          String
   topic         String
   input         String
   output        String
   exampleInput  String
   exampleOutput String
+  submission    Submission[]
+}
+
+model Submission {
+  submissionId  Int      @id @default(autoincrement())
+  problem       Problem  @relation(fields: [problemId], references: [id])
+  problemId     Int
+  name          String
+  language      Language
+  timeSubmitted DateTime
+  timeUpdated   DateTime
+  runtime       Int
+  status        Status
 }
