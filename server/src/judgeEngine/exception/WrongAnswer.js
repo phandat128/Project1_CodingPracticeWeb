@@ -2,6 +2,6 @@
 export default class WrongAnswer extends Error{
     constructor(message){
         super(message)
-        this.name = 'Wrong Answer'
+        this.name = 'WRONG_ANSWER'
     }
 } 

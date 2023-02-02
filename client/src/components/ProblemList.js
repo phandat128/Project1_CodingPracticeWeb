@@ -4,12 +4,7 @@ import Table from "react-bootstrap/Table"
 import axios from "axios"
 
 function ProblemList() {
-    const [list, setList] = useState([
-        {
-            id: 1,
-            name: "Compute C_k_n",
-        },
-    ])
+    const [list, setList] = useState([])
 
     async function getList(){
         try{
@@ -28,7 +23,7 @@ function ProblemList() {
         <Table striped bordered hover>
             <thead>
                 <tr>
-                    <th>Id</th>
+                    <th>#</th>
                     <th>Name</th>
                 </tr>
             </thead>

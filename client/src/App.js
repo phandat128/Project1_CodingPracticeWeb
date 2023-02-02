@@ -12,6 +12,8 @@ import ProblemList from "./components/ProblemList.js";
 import ProblemDetail from "./components/ProblemDetail.js";
 import Footer from "./components/Footer.js";
 import Submit from "./components/Submit.js";
+import SubmissionList from "./components/SubmissionList.js";
+import SubmissionDetail from "./components/SubmissionDetail.js";
 import Help from "./components/Help.js";
 
 function App() {
@@ -27,6 +29,8 @@ function App() {
           <Route path="/problem/:id" element={<ProblemDetail />}></Route>
           <Route path="/submit" element={<Submit />}></Route>
           <Route path="/help" element={<Help />}></Route>
+          <Route path="/submissionList" element={<SubmissionList />}></Route>
+          <Route path="/submissionDetail/:id" element={<SubmissionDetail />}></Route>
         </Routes>
       </div>
       <Footer />

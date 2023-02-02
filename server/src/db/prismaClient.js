@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function deleteAll() {
-    const all = await prisma.problem.deleteMany({})
+    const all = await prisma.Submission.deleteMany({})
     console.log(all)
 }
 
@@ -33,6 +33,28 @@ async function main (){
     console.log(problem)
 }
 
+async function getAllProblem(){
+    const problemList = await prisma.Problem.findMany()
+    console.log(problemList)
+
+}
+
+async function getAllSubmission(){
+    const submissionList = await prisma.Submission.findMany()
+    console.log(submissionList)
+}
+
+//await prisma.Problem.update({
+//    where: {
+//        id: 4
+//    },
+//    data: {
+//        id: 1
+//    }
+//})
+
+//getAllProblem()
+//getAllSubmission()
 //deleteAll()
 
 export default prisma

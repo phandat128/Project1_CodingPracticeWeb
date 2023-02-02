@@ -1,25 +1,34 @@
 import Table from "react-bootstrap/Table"
 import Button from "react-bootstrap/Button"
 import { Editor, EditorState } from "draft-js"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import axios from "axios"
 
 function Submit() {
     const [problemList, setProblemList] = useState([
         {
-            id: 1,
-            name: "Compute C_k_n",
-        },
+            id: null,
+            name: null,
+        }
     ])
-    const [problem, setProblem] = useState("1. Compute C_k_n")
+    const [problem, setProblem] = useState(null)
     const [language, setLanguage] = useState("C++")
     const [editor, setEditor] = useState(() => EditorState.createEmpty())
     const [file, setFile] = useState(null)
+    const languageList = ["C++"]//, "Java", "Python 3", "JavaScript"]
 
-    const languageList = ["C++", "Java", "Python 3", "JavaScript"]
-    //async function sendSubmit(submit) {
-    //    await axios.post
-    //}
+    async function getList(){
+        try{
+    		const response = await axios.get(process.env.REACT_APP_API_URL + "/getAllProblems")
+            setProblemList(problemList.concat(response.data))
+        } catch(err){
+    		console.log(err)
+    	}
+    }
+
+    useEffect(() => {
+    	getList()
+    },[])
 
     function fileToBase64(_file) {
         const reader = new FileReader()
@@ -44,6 +53,7 @@ function Submit() {
 
     async function handleSubmit(e) {
         e.preventDefault()
+        if (!problem) return alert("You have not chosen a problem. Please try again!")
         const sourcefile = await fileToBase64(file)
         const submit = {
             problemId: (Number)(problem.split(". ")[0]),
@@ -53,9 +63,11 @@ function Submit() {
             sourcefile: sourcefile,
             time: getTime()
         }
-        console.log(submit)
-        const result = await axios.post(process.env.REACT_APP_API_URL + "/addSubmission", submit)
-        console.log(result.data)
+        //console.log(submit)
+        axios.post(process.env.REACT_APP_API_URL + "/addSubmission", submit)
+        //console.log(result.data)
+        alert("You have submitted successfully")
+        window.location.href = "/submissionList"
     }
 
     return (
@@ -67,7 +79,8 @@ function Submit() {
                         <td>
                             <select className="form-select" onChange={e => setProblem(e.target.value)}>
                                 {problemList.map(problem => (
-                                    <option>{problem.id}. {problem.name}</option>
+                                    problem.id ? <option key={problem.id}>{problem.id}. {problem.name}</option> 
+                                               : <option key={0}></option>
                                 ))}
                             </select>
                         </td>
@@ -77,21 +90,21 @@ function Submit() {
                         <td>
                             <select className="form-select" onChange={e => setLanguage(e.target.value)}>
                                 {languageList.map(language => (
-                                    <option>{language}</option>
+                                    <option key={language}>{language}</option>
                                 ))}
                             </select>
                         </td>
                     </tr>
-                    <tr>
+                    {/*<tr>
                         <td className="title">Source code: </td>
                         <td>
                             <div className="form-control">
                                 <Editor editorState={editor} onChange={setEditor} />
                             </div>
                         </td>
-                    </tr>
+                    </tr>*/}
                     <tr>
-                        <td className="title">Or submit file: </td>
+                        <td className="title">Submit file: </td>
                         <td>
                             <input type="file" name="submit-file" onChange={e => setFile(e.target.files[0])} />
                         </td>

@@ -15,6 +15,9 @@ function Menu(){
                     <Link to = "/submit">SUBMIT</Link>
                 </li>
                 <li>
+                    <Link to = "/submissionList">SUBMISSIONS</Link>
+                </li>
+                <li>
                     <Link to = "/addProblem">CONTRIBUTE</Link>
                 </li>
                 <li>

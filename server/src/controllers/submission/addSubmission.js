@@ -3,6 +3,7 @@ import path from 'path'
 import CodeRunner from '../../judgeEngine/CodeRunner.js';
 import FileAPI from '../../api/fileAPI.js';
 import evaluate from '../../judgeEngine/evaluate.js';
+import prisma from '../../db/prismaClient.js';
 
 async function addSubmission(req, res) {
     const fileAPI = new FileAPI()
@@ -16,9 +17,29 @@ async function addSubmission(req, res) {
     const solutionFileName = `${body.time}-${body.problemName.replace(" ", "_")}`
     const solutionFileExt = languageExtension(body.language)
     const solutionFilePath = path.join(solutionDirPath, `${solutionFileName}${solutionFileExt}`) //.../src/solution/fileName.ext
-    //console.log(sourceCode)
     fileAPI.writeSolution(solutionFilePath, sourceCode)
-    //console.log(solutionFilePath)
+
+    //add the solution to database with status pending
+    const timeSubmitted = new Date(body.time + new Date(2020, 0, 1).getTime())
+    const initSubmission = {
+        problemId: body.problemId,
+        submissionName: solutionFileName,
+        language: body.language,
+        timeSubmitted: timeSubmitted,
+        timeUpdated: timeSubmitted,
+        runtime: 0,
+        status: "PENDING",
+    }
+    let submissionId = 0
+    try {
+        const submission = await prisma.Submission.create({
+            data: initSubmission
+        })
+        console.log("Submission is created in database")
+        submissionId = submission.submissionId
+    } catch (e) {
+        console.log(e)
+    }
 
     //copy solution file from solution directory to judgeEngine directory
     const runner = new CodeRunner()
@@ -29,7 +50,10 @@ async function addSubmission(req, res) {
     //copy testcase files to judgeEngine directory
     const testcaseDirPath = path.join(controllerDirPath, "../../", "testcase", body.problemId.toString())
     fileAPI.copyTestcase(testcaseDirPath, runner.dirname)
-    
+
+    await new Promise(resolve => setTimeout(resolve, 1000)) // wait 1s
+    let runtime = 0
+    let result = null
     try {
         //run temp file
         const startTime = Date.now()
@@ -37,21 +61,43 @@ async function addSubmission(req, res) {
         const compileTime = Date.now() - startTime
         console.log(`Compiling time: ${compileTime} ms`)
         runner.execute(runner.dirname, "temp")
-        const runTime = Date.now() - startTime - compileTime
-        console.log(`Running time: ${runTime} ms`)
-
+        runtime = Date.now() - startTime - compileTime
+        console.log(`Running time: ${runtime} ms`)
         //evaluate output
-        const result = evaluate(path.join(runner.dirname, "results.txt"), path.join(runner.dirname, "output.txt"))
+        result = evaluate(path.join(runner.dirname, "results.txt"), path.join(runner.dirname, "output.txt"))
         console.log("Evaluate result:" + result)
-        res.json(result)
     } catch (e) {
-        console.log(e.name)
-        console.log(e.message)
-        res.json({
-            error: e.name,
-            message: e.message
+        // error occured, update status according to error name 
+        console.log(e)
+        await prisma.Submission.update({
+            where: {
+                submissionId: submissionId
+            },
+            data: {
+                status: e.name,
+                message: e.message,
+                timeUpdated: new Date()
+            }
+        })
+        console.log("Update failed submission")
+        return;
+    }
+    // result is accepted
+    if (result === "ACCEPTED") {
+        await prisma.Submission.update({
+            where: {
+                submissionId: submissionId
+            },
+            data: {
+                runtime: runtime,
+                status: result,
+                message: "Congratulations!",
+                timeUpdated: new Date()
+            }
         })
     }
+    console.log("Update accepted submission")
+
 }
 
 function languageExtension(language) {

@@ -28,6 +28,17 @@ div {
   border-color: $border-color !important;
 }
 
+.popup {
+  .title {
+    text-align: center;
+    font-size: $title-font-size;
+  }
+  .message {
+    text-align: justify;
+    font-size: $content-font-size;
+  }
+}
+
 /*body css*/
 .body {
   margin: 0 auto;
