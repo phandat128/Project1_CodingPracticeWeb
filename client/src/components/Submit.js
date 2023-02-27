@@ -53,7 +53,8 @@ function Submit() {
 
     async function handleSubmit(e) {
         e.preventDefault()
-        if (!problem) return alert("You have not chosen a problem. Please try again!")
+        if (!problem) return alert("You have not chosen a problem. Please choose your problem!")
+        if (!file) return alert("You have not chosen a file. Please choose a file to submit!")
         const sourcefile = await fileToBase64(file)
         const submit = {
             problemId: (Number)(problem.split(". ")[0]),

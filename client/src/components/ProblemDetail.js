@@ -1,24 +1,28 @@
 import { useParams } from "react-router-dom"
 import axios from "axios"
 import { useEffect, useState } from "react"
+import { Editor, EditorState, ContentState } from "draft-js"
+import Loading from "./Loading"
 
 function ProblemDetail() {
     const { id } = useParams()
     const [problem, setProblem] = useState({
-        id: 1,
-        name: "Compute C_k_n",
-        topic: "Given two positive integers k and n. \nCompute C(k,n) which is the number of ways to select k objects from a given set of n objects.",
-        input: "Two positive integers k and n (1 <= k,n <= 999).",
-        output: "Write the value C(k,n) modulo 10^9+7.",
-        exampleInput: "3  5",
-        exampleOutput: "10",
+        id: 0,
+        name: "",
+        topic: "",
+        input: "",
+        output: "",
+        exampleInput: "",
+        exampleOutput: "",
     })
+    const [loading, setLoading] = useState(true)
 
     async function getProblemById(id) {
         try {
             const response = await axios.get(process.env.REACT_APP_API_URL + "/getProblemById/" + id)
             setProblem(response.data)
-            console.log(problem)
+            setLoading(false)
+            //console.log(problem)
         }
         catch (err) {
             console.log(err)
@@ -30,31 +34,36 @@ function ProblemDetail() {
     }, [])
 
     return (
-        <div className="problem">
-            <div className="name">{problem.id}. {problem.name}</div>
-            <div className="topic">
-                <div>{problem.topic}</div>
-            </div>
-            <div className="primary-div">
-                <div>Input</div>
-                <div>{problem.input}</div>
-            </div>
-            <div className="primary-div">
-                <div>Output</div>
-                <div>{problem.output}</div>
-            </div>
-            <div className="primary-div">
-                <div>Example</div>
-                <div className="secondary-div">
-                    <div>Input</div>
-                    <div>{problem.exampleInput}</div>
-                </div>
-                <div className="secondary-div">
-                    <div>Output</div>
-                    <div>{problem.exampleOutput}</div>
-                </div>
-            </div>
-        </div>
+        <>
+            {loading ? (
+                <Loading />
+            ) : (
+                <div className="problem">
+                    <div className="name">{problem.id}. {problem.name}</div>
+                    <div className="topic">
+                        <Editor editorState={EditorState.createWithContent(ContentState.createFromText(problem.topic))} readOnly={true}/>
+                    </div>
+                    <div className="primary-div">
+                        <span>Input</span>
+                        <Editor editorState={EditorState.createWithContent(ContentState.createFromText(problem.input))} readOnly={true}/>
+                    </div>
+                    <div className="primary-div">
+                        <span>Output</span>
+                        <Editor editorState={EditorState.createWithContent(ContentState.createFromText(problem.output))} readOnly={true}/>
+                    </div>
+                    <div className="primary-div">
+                        <span>Example</span>
+                        <div className="secondary-div">
+                            <span>Input</span>
+                            <Editor editorState={EditorState.createWithContent(ContentState.createFromText(problem.exampleInput))} readOnly={true}/>
+                        </div>
+                        <div className="secondary-div">
+                            <span>Output</span>
+                            <Editor editorState={EditorState.createWithContent(ContentState.createFromText(problem.exampleOutput))} readOnly={true}/>
+                        </div>
+                    </div>
+                </div >)}
+        </>
     )
 }
 

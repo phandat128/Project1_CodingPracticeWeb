@@ -29,7 +29,7 @@ function SubmissionDetail() {
                 <p>MESSAGE: {detail.message}</p>
                 <p>Your code submitted:</p>
                 <div className="roundbox">
-                    <Editor editorState={code} />
+                    <Editor editorState={code} readOnly={true}/>
                 </div>
             </div>
         </div>

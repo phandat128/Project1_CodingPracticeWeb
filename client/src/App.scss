@@ -1,7 +1,7 @@
 $header-height: 64px;
 
 $menu-font-size: 15px;
-$menu-font-weight: 500;
+$bold-font-weight: 500;
 $menu-height: 40px;
 
 $title-font-size: 24px;
@@ -22,22 +22,18 @@ div {
   border: 1px solid $border-color;
   border-radius: 0.375rem;
 }
+
+.bold {
+  font-weight: $bold-font-weight;
+}
+
 //override the default bootstrap border outline style
 .form-control:focus, .form-select:focus{
   box-shadow: none !important;
   border-color: $border-color !important;
 }
 
-.popup {
-  .title {
-    text-align: center;
-    font-size: $title-font-size;
-  }
-  .message {
-    text-align: justify;
-    font-size: $content-font-size;
-  }
-}
+
 
 /*body css*/
 .body {
@@ -51,7 +47,7 @@ div {
   }
 
   .body-content {
-    min-height: 1000px;
+    min-height: 600px;
     margin: 32px 24px 0 24px;
   }
 }
@@ -77,7 +73,7 @@ div {
 /* Menu css */
 .menu {
   font-size: $menu-font-size;
-  font-weight: $menu-font-weight;
+  font-weight: $bold-font-weight;
 
   height: $menu-height;
   margin: 8px 20px 0 20px;
@@ -102,10 +98,16 @@ div {
   text-align: center;
 }
 
+.home, .help{
+  p, li{
+    font-size: 20px;
+  }
+}
+
 .problem {
   .name {
     font-size: $title-font-size;
-    font-weight: 500;
+    font-weight: $bold-font-weight;
     text-align: center;
     margin-bottom: 24px;
   }
@@ -116,12 +118,16 @@ div {
   .primary-div {
     margin-bottom: 24px;
 
-    :first-child {
-      font-weight: 500;
+    >:first-child {
+      font-weight: $bold-font-weight;
     }
   }
 
   .secondary-div {
+    >:first-child{
+      font-weight: $bold-font-weight;
+    }
+
     margin-bottom: 12px;
   }
 }
@@ -132,6 +138,33 @@ div {
     text-align: right;
     padding-right: 40px;
   }
+}
+
+.loading {
+  div{
+    margin: auto;
+  }
+}
+
+.ACCEPTED {
+  color: #00AA00 !important;
+  font-weight: $bold-font-weight;
+}
+
+.COMPILE_ERROR, .RUNTIME_ERROR {
+  color: #FF0000 !important;
+}
+
+.WRONG_ANSWER {
+  color: #a600ff !important;
+}
+
+.TIME_LIMIT_EXCEEDED {
+  color: #FF8C00 !important;
+}
+
+.PENDING {
+  color: #0011ff !important;
 }
 
 //footer css

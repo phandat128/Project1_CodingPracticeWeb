@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import Button from "react-bootstrap/Button"
 import axios from "axios";
 import { Editor, EditorState } from "draft-js";
+import Utility from "../Utility.js";
 
 import 'draft-js/dist/Draft.css'
 import DraftEditor from "./DraftEditor";
@@ -13,6 +14,8 @@ function AddProblem() {
   const [output, setOutput] = useState(() => EditorState.createEmpty());
   const [exampleInput, setExampleInput] = useState(() => EditorState.createEmpty());
   const [exampleOutput, setExampleOutput] = useState(() => EditorState.createEmpty());
+  const [testInput, setTestInput] = useState(() => EditorState.createEmpty());
+  const [testOutput, setTestOutput] = useState(() => EditorState.createEmpty());
 
   async function add(data) {
     const problem = await axios.post(process.env.REACT_APP_API_URL + "/addProblem", data)
@@ -28,9 +31,16 @@ function AddProblem() {
       output: output.getCurrentContent().getPlainText(), 
       exampleInput: exampleInput.getCurrentContent().getPlainText(), 
       exampleOutput: exampleOutput.getCurrentContent().getPlainText(), 
+      testInput: testInput.getCurrentContent().getPlainText(),
+      testOutput: testOutput.getCurrentContent().getPlainText(),
+    }
+    if (Utility.isBlank(name, problem.topic, problem.input, problem.output, problem.exampleInput, problem.exampleOutput, problem.testInput, problem.testOutput)){
+      return alert("Please fill all the text fields!")
     }
     add(problem)
     console.log(problem)
+    alert("You have added a problem!")
+    window.location.href = '/problemList'
   }
 
   return (
@@ -71,6 +81,18 @@ function AddProblem() {
         <label>Example Output: </label>
         <div className="form-control">
           <Editor editorState={exampleOutput} onChange={setExampleOutput} />
+        </div>
+      </div>
+      <div className="form-group">
+        <label>Test Input: </label>
+        <div className="form-control">
+          <Editor editorState={testInput} onChange={setTestInput} />
+        </div>
+      </div>
+      <div className="form-group">
+        <label>Test Output: </label>
+        <div className="form-control">
+          <Editor editorState={testOutput} onChange={setTestOutput} />
         </div>
       </div>
       <br></br>

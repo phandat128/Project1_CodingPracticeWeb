@@ -1,32 +1,69 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import Table from "react-bootstrap/Table"
+import Pagination from "react-bootstrap/Pagination"
 import axios from "axios"
-import Popup from 'reactjs-popup'
 import 'reactjs-popup/dist/index.css'
 
-import SubmissionDetail from "./SubmissionDetail.js"
+import Loading from "./Loading.js"
 
 function SubmissionList() {
-    const [list, setList] = useState([
-        {
-            "submissionId": 4,
-            "language": "C++",
-            "timeSubmitted": "2023-01-14T14:57:09.795Z",
-            "status": "PENDING",
-            "runtime": 0,
-            "message": "",
-            "problemId": 1,
-            "problem": {
-                "name": "C(k,n)"
-            }
+    const [list, setList] = useState([])
+    const [loading, setLoading] = useState(true)
+
+    const itemPerPage = 20
+    const [currentPage, setCurrentPage] = useState(1)
+    function renderTablePage() {
+        const startIndex = (currentPage - 1) * itemPerPage
+        const endIndex = startIndex + itemPerPage
+        const listInPage = list.slice(startIndex, endIndex)
+        return (listInPage.map(e => (
+            <tr key={e.submissionId}>
+                <td>
+                    <Link to={`/submissionDetail/${e.submissionId}`}>{e.submissionId}</Link>
+                </td>
+                <td>
+                    <Link to={`/problem/${e.problemId}`}>{e.problem.name}</Link>
+                </td>
+                <td>
+                    <span>{new Date(e.timeSubmitted).toLocaleString()}</span>
+                </td>
+                <td>
+                    <span>{e.language}</span>
+                </td>
+                <td>
+                    <Link to={`/submissionDetail/${e.submissionId}`} className={e.status}>{e.status}</Link>
+                </td>
+                <td>
+                    <span>{e.runtime} ms</span>
+                </td>
+            </tr>
+        )))
+    }
+
+    function renderPaginationItem() {
+        const totalItems = list.length
+        const totalPages = Math.ceil(totalItems / itemPerPage)
+        const paginationItems = []
+        for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+            paginationItems.push(
+                <Pagination.Item
+                    key={pageNum}
+                    active={pageNum === currentPage}
+                    onClick={() => setCurrentPage(pageNum)}
+                >
+                    {pageNum}
+                </Pagination.Item>
+            )
         }
-    ])
+        return paginationItems
+    }
 
     async function getSubmissionList() {
         try {
             const response = await axios.get(process.env.REACT_APP_API_URL + "/getAllSubmissions")
-            setList(response.data)
+            setList(response.data.reverse())
+            setLoading(false)
         } catch (err) {
             console.log(err)
         }
@@ -37,49 +74,34 @@ function SubmissionList() {
     }, [])
 
     return (
-        <Table bordered hover>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Problem</th>
-                    <th>Time</th>
-                    <th>Language</th>
-                    <th>Status</th>
-                    <th>Runtime</th>
-                </tr>
-            </thead>
-            <tbody>
-                {list.map(e => (
-                    <tr key={e.submissionId}>
-                        <td>
-                            <div to={""}>{e.submissionId}</div>
-                        </td>
-                        <td>
-                            <Link to={`/problem/${e.problemId}`}>{e.problem.name}</Link>
-                        </td>
-                        <td>
-                            <div to={""}>{new Date(e.timeSubmitted).toLocaleString()}</div>
-                        </td>
-                        <td>
-                            <div to={""}>{e.language}</div>
-                        </td>
-                        <td>
-                            {/*<Popup 
-                                contentStyle={{"width": "30%"}} 
-                                modal nested 
-                                trigger={<Link>{e.status}</Link>} 
-                                position="center center">
-                                <SubmissionDetail status={e.status} message={e.message} submissionName={e.submissionName} language={e.language}/>
-                            </Popup>*/}
-                            <Link to={`/submissionDetail/${e.submissionId}`}>{e.status}</Link>
-                        </td>
-                        <td>
-                            <div to={""}>{e.runtime} ms</div>
-                        </td>
-                    </tr>
-                ))}
-            </tbody>
-        </Table>
+        <>
+            {loading ? (
+                <Loading />
+            ) : (
+                <>
+                    <Table bordered hover>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Problem</th>
+                                <th>Time</th>
+                                <th>Language</th>
+                                <th>Status</th>
+                                <th>Runtime</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {renderTablePage()}
+                        </tbody>
+                    </Table>
+                    <div style={{textAlign: 'center'}}>
+                        <Pagination style={{display: 'inline-flex'}}>
+                            {renderPaginationItem()}
+                        </Pagination>
+                    </div>
+                </>
+            )}
+        </>
     )
 }
 
