@@ -12,12 +12,19 @@ async function addSubmission(req, res) {
     const sourceCode = body.sourcefile || body.sourcecode
     const controllerDirPath = path.dirname(fileURLToPath(import.meta.url)) //.../src/controller/submission 
 
-    //write sourcecode to file stored in solution directory
     const solutionDirPath = path.join(controllerDirPath, "../../", 'solution')
     const solutionFileName = `${body.time}-${body.problemName.replace(" ", "_")}`
     const solutionFileExt = languageExtension(body.language)
     const solutionFilePath = path.join(solutionDirPath, `${solutionFileName}${solutionFileExt}`) //.../src/solution/fileName.ext
-    fileAPI.writeSolution(solutionFilePath, sourceCode)
+    //write sourcecode to file stored in solution directory
+    try {
+        fileAPI.writeSolution(solutionFilePath, sourceCode)
+    } catch (e) {
+        console.error(e)
+        res.status(500).json("Server error: " + e.message)
+        return
+    }
+
 
     //add the solution to database with status pending
     const timeSubmitted = new Date(body.time + new Date(2020, 0, 1).getTime())
@@ -39,6 +46,8 @@ async function addSubmission(req, res) {
         submissionId = submission.submissionId
     } catch (e) {
         console.log(e)
+        res.status(500).json("Server error: " + e.message)
+        return
     }
 
     //copy solution file from solution directory to judgeEngine directory
@@ -76,7 +85,8 @@ async function addSubmission(req, res) {
             data: {
                 status: e.name,
                 message: e.message,
-                timeUpdated: new Date()
+                timeUpdated: new Date(),
+                runtime: runtime
             }
         })
         console.log("Update failed submission")

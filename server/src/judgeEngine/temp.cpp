@@ -1,23 +1,20 @@
 #include<stdio.h>
-int x[101];
-int Solve(){
-	int n,m,a[1001],b[1001];
-	scanf ("%d%d",&n,&m);
-	for (int i=1;i<=n;i++) scanf("%d",&a[i]);
-	for (int i=1;i<=m;i++) scanf("%d",&b[i]);
-	if (m!=n) return 0;
+int k,n,c[1001][1001];
+long long C(int k,int n){
+	if (k==0||k==n) return 1;
 	else {
-		for (int i=1;i<=n;i++) {
-			if (a[i]!=b[i]) return 0;
+		if (c[k][n]==-1) {
+			c[k][n]= (C(k-1,n-1)+C(k,n-1))%1000000006;
+			return c[k][n];
 		}
+		else return c[k][n];
 	}
-	return 1;
 }
 int main (){
-	int T;
-	scanf("%d",&T);
-	for (int i=1;i<=T;i++){		
-		x[i]=Solve();
+	for (int i=0;i<=1000;i++){
+		for (int j=0;j<=1000;j++) c[i][j]=-1;
 	}
-	for (int i=1;i<=T;i++) printf("%d\n",x[i]);
+	scanf("%d%d",&k,&n);
+	printf("%ld",C(k,n));
+	return 0;
 }

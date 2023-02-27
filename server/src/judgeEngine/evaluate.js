@@ -9,7 +9,7 @@ function evaluate(resultFilePath, outputFilePath) {
     const output = fs.readFileSync(outputFilePath).toString();
     const compare = diffWords(output, result);
 
-    if (compare[1]) {
+    if (compare[0].added || compare[0].removed) {
         const input = fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), 'input.txt'));
         throw new WrongAnswer(`Input: ${input}.\nExpected result: ${output}.\nReceived result: ${result}`)
     }
